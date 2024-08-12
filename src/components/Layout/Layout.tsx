@@ -16,11 +16,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <Flex direction="column" minHeight="100vh">
       <NavBar />
-      <Box as="main" flexGrow={1}>
-        <Container maxW="container.xl" py={8}>
-          {children}
-        </Container>
-      </Box>
+        <Box as="main" flexGrow={1} ml="240px" p="4">
+          <Container maxW="container.xl" py={8}>
+            {children}
+          </Container>
+        </Box>
       <Footer />
     </Flex>
   );
