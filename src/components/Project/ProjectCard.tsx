@@ -62,7 +62,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
             </Button>
             <Button
               as="a"
-              href={project.demo_link}
+              href={project.demo_link || undefined}
               target="_blank"
               size="sm"
               variant="outline"
