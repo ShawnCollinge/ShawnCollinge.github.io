@@ -60,7 +60,7 @@ export default function Footer() {
         align={{ base: 'center', md: 'center' }}>
         <Text>© 2024 Shawn Collinge</Text>
         <Stack direction='row' spacing={6}>
-          <SocialButton label='Github' href='http://github.com/ShawnCollinge'>
+          <SocialButton label='Github' href='https://github.com/ShawnCollinge'>
             <FaGithub />
           </SocialButton>
           <SocialButton label='YouTube' href='https://www.linkedin.com/in/s-collinge/'>
