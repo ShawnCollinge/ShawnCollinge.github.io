@@ -7,6 +7,7 @@ import { AuthPageType } from './types/Auth';
 import ProtectedRoute from './components/Authentication/ProtectedRoute';
 import CreateProject from './pages/Admin/CreateProject';
 import AdminLayout from './components/Admin/AdminLayout';
+import ProjectsPage from './pages/ProjectsPage';
 
 const theme = extendTheme({
   config: {
@@ -25,11 +26,8 @@ function App() {
           <Route path="/login" element={<AuthPage pageType={AuthPageType.LOGIN} />} />
           <Route path="/register" element={<AuthPage pageType={AuthPageType.REGISTER} />} />
           <Route path="/forgotPassword" element={<AuthPage pageType={AuthPageType.FORGOT_PASSWORD} />} />
+          <Route path="/projects" element={<ProjectsPage />} />
           <Route path="*" element={<div>Not Found</div>} />
-          <Route path="/project" element={
-            <ProtectedRoute>
-              <CreateProject />
-          </ProtectedRoute>} />
           <Route path="/admin/createProject" element={
             <ProtectedRoute>
               <AdminLayout>

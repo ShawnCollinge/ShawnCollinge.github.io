@@ -22,7 +22,13 @@
         "vite",
         "npm",
         "eslint",
-        "Chakra"
+        "Chakra",
+        "supabase",
+        "Collinge",
+        "Xinyi",
+        "Zhou",
+        "skahl",
+        "practiscore"
     ],
     "overrides": [
         {

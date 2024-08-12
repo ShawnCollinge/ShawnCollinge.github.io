@@ -26,7 +26,6 @@ interface Props {
 const NavLink = (props: Props) => {
   const { children } = props;
 
-  // Move useColorModeValue to the top level to avoid conditional hook issues
   const hoverBg = useColorModeValue('gray.200', 'gray.700');
 
   return (
@@ -51,7 +50,6 @@ export default function NavBar() {
   const navigate = useNavigate();
   const { user, loading } = useAuthStatus();
 
-  // Ensure that all useColorModeValue calls are consistent
   const bg = useColorModeValue('gray.100', 'gray.900');
   const hoverBg = useColorModeValue('gray.200', 'gray.700');
   const activeBg = useColorModeValue('gray.300', 'gray.600');

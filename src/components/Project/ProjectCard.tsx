@@ -4,27 +4,21 @@ import {
   Image,
   Text,
   Button,
-  Flex,
   Heading,
   Stack,
+  VStack,
   useColorModeValue,
 } from '@chakra-ui/react';
-
-interface Project {
-  id: string;
-  title: string;
-  techStacks: string;
-  githubLink: string;
-  demoLink: string;
-  images: string[];
-}
+import useAuthStatus from '../../hooks/useAuthStatus';
+import { Project } from '../../types/Projects';
 
 interface ProjectCardProps {
   project: Project;
-  isAdmin?: boolean;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, isAdmin }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const { isAdmin } = useAuthStatus();
+
   return (
     <Box
       borderWidth="1px"
@@ -33,28 +27,30 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, isAdmin }) => {
       boxShadow="lg"
       bg={useColorModeValue('white', 'gray.800')}
       mb={4}
+      p={4} 
     >
       <a href={`/projects/${project.id}`}>
         <Image
-          src={project.images[0]}
+          src={project.image_urls[0]}
           alt={project.title}
           objectFit="cover"
           w="100%"
           h="200px"
+          borderRadius="md"
         />
       </a>
-      <Box p={4}>
+      <Box pt={4}> 
         <Heading fontSize="xl" mb={2}>
           {project.title}
         </Heading>
         <Text fontSize="md" color={useColorModeValue('gray.700', 'gray.300')}>
-          {project.techStacks}
+          {project.tech_stacks}
         </Text>
-        <Flex justify="space-between" alignItems="center" mt={4}>
-          <Stack direction="row" spacing={4}>
+        <VStack spacing={4} mt={4}>
+          <Stack direction="row" spacing={4} justify="center">
             <Button
               as="a"
-              href={project.githubLink}
+              href={project.github_link}
               target="_blank"
               size="sm"
               variant="outline"
@@ -64,12 +60,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, isAdmin }) => {
             </Button>
             <Button
               as="a"
-              href={project.demoLink}
+              href={project.demo_link}
               target="_blank"
               size="sm"
               variant="outline"
               colorScheme="teal"
-              isDisabled={!project.demoLink}
+              isDisabled={!project.demo_link}
             >
               Demo
             </Button>
@@ -84,7 +80,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, isAdmin }) => {
             </Button>
           </Stack>
           {isAdmin && (
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={4} justify="center">
               <Button
                 as="a"
                 href={`/admin/edit/${project.id}`}
@@ -102,7 +98,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, isAdmin }) => {
               </Button>
             </Stack>
           )}
-        </Flex>
+        </VStack>
       </Box>
     </Box>
   );

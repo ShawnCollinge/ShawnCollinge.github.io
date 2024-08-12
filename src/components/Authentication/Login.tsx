@@ -26,7 +26,7 @@ export const Login = () => {
   const navigate = useNavigate()
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); 
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -61,7 +61,7 @@ export const Login = () => {
           <Stack spacing={{ base: '2', md: '3' }} textAlign="center">
             <Heading size={{ base: 'xs', md: 'sm' }}>Log in to your account</Heading>
             <Text color="fg.muted">
-              Don't have an account? <Link onClick={() => navigate('/register')}>Sign up</Link>
+              Don&apos;t have an account? <Link onClick={() => navigate('/register')}>Sign up</Link>
             </Text>
           </Stack>
         </Stack>
@@ -72,7 +72,6 @@ export const Login = () => {
           boxShadow={{ base: 'none', sm: 'md' }}
           borderRadius={{ base: 'none', sm: 'xl' }}
         >
-          {/* Wrap your form elements in a <form> tag */}
           <form onSubmit={handleLogin}>
             <Stack spacing="6">
               <Stack spacing="5">

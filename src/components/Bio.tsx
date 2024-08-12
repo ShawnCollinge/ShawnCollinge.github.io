@@ -1,5 +1,3 @@
-'use client'
-
 import {
   Container,
   Stack,
@@ -44,8 +42,8 @@ export default function HomePageBio() {
             </Text>
           </Heading>
           <Text color={'gray.500'} fontSize={'lg'}>
-            I'm Shawn Collinge, a Computer Science student at the Paul G. Allen School of Computer Science with a strong interest in Software Development. 
-            I'm particularly interested in Machine Learning and hope to specialize in this field. I am currently engaged in undergraduate machine learning research, advised by Xinyi Zhou. 
+            I&apos;m Shawn Collinge, a Computer Science student at the Paul G. Allen School of Computer Science with a strong interest in Software Development. 
+            I&apos;m particularly interested in Machine Learning and hope to specialize in this field. I am currently engaged in undergraduate machine learning research, advised by Xinyi Zhou. 
             I am also a Teaching Assistant for the Machine Learning class.
           </Text>
           <Text color={'gray.500'} fontSize={'lg'}>
@@ -90,7 +88,7 @@ export default function HomePageBio() {
           />
           <Box
             position={'relative'}
-            height={'350px'}  // Increased height
+            height={'350px'} 
             rounded={'2xl'}
             boxShadow={'2xl'}
             width={'full'}
