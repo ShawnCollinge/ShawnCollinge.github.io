@@ -25,7 +25,7 @@ export const Login = () => {
   const toast = useToast()
   const navigate = useNavigate()
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault(); 
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({

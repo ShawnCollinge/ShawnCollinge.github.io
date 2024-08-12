@@ -11,8 +11,11 @@ import {
   IconProps,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 
 export default function HomePageBio() {
+  const navigate = useNavigate();
+  
   return (
     <Container maxW={'7xl'}>
       <Stack
@@ -57,7 +60,8 @@ export default function HomePageBio() {
               px={6}
               colorScheme={'blue'}
               bg={'blue.400'}
-              _hover={{ bg: 'blue.500' }}>
+              _hover={{ bg: 'blue.500' }}
+              onClick={() => navigate("/projects")}>
               View My Projects
             </Button>
             <Button

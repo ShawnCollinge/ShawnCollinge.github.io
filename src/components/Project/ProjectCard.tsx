@@ -11,13 +11,16 @@ import {
 } from '@chakra-ui/react';
 import useAuthStatus from '../../hooks/useAuthStatus';
 import { Project } from '../../types/Projects';
+import { useNavigate } from 'react-router-dom';
 
 interface ProjectCardProps {
   project: Project;
+  onDelete: (id: string) => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
   const { isAdmin } = useAuthStatus();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -29,7 +32,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       mb={4}
       p={4} 
     >
-      <a href={`/projects/${project.id}`}>
         <Image
           src={project.image_urls[0]}
           alt={project.title}
@@ -37,8 +39,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           w="100%"
           h="200px"
           borderRadius="md"
+          onClick={() => navigate(`/projects/${project.id}`)}
         />
-      </a>
       <Box pt={4}> 
         <Heading fontSize="xl" mb={2}>
           {project.title}
@@ -71,7 +73,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             </Button>
             <Button
               as="a"
-              href={`/projects/${project.id}`}
+              onClick={() => navigate(`/projects/${project.id}`)}
               size="sm"
               variant="outline"
               colorScheme="teal"
@@ -92,7 +94,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               <Button
                 size="sm"
                 colorScheme="red"
-                onClick={() => handleDelete(project.id)}
+                onClick={() => onDelete(project.id)}
               >
                 Delete
               </Button>
@@ -104,8 +106,5 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   );
 };
 
-const handleDelete = (id: string) => {
-  console.log(`Delete project with id: ${id}`);
-};
 
 export default ProjectCard;

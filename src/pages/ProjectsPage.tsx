@@ -8,22 +8,27 @@ const ProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const fetchProjects = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*'); 
+
+    if (error) {
+      console.error('Error fetching projects:', error.message);
+    } else {
+      setProjects(data || []);
+    }
+
+    setLoading(false);
+  };
+
+  const onDelete = async (id: string) => {
+    await supabase.from('projects').delete().eq('id', id);
+    fetchProjects();
+ };
+
   useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*'); 
-
-      if (error) {
-        console.error('Error fetching projects:', error.message);
-      } else {
-        setProjects(data || []);
-      }
-
-      setLoading(false);
-    };
-
     fetchProjects();
   }, []);
 
@@ -31,7 +36,7 @@ const ProjectsPage: React.FC = () => {
     return <div>Loading...</div>; 
   }
 
-  return <ProjectList projects={projects} />; 
+  return <ProjectList projects={projects} onDelete={onDelete} />; 
 };
 
 export default ProjectsPage;

@@ -8,6 +8,9 @@ import ProtectedRoute from './components/Authentication/ProtectedRoute';
 import CreateProject from './pages/Admin/CreateProject';
 import AdminLayout from './components/Admin/AdminLayout';
 import ProjectsPage from './pages/ProjectsPage';
+import ViewProject from './pages/ProjectPage';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const theme = extendTheme({
   config: {
@@ -27,6 +30,7 @@ function App() {
           <Route path="/register" element={<AuthPage pageType={AuthPageType.REGISTER} />} />
           <Route path="/forgotPassword" element={<AuthPage pageType={AuthPageType.FORGOT_PASSWORD} />} />
           <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:id" element={<ViewProject />} />
           <Route path="*" element={<div>Not Found</div>} />
           <Route path="/admin/createProject" element={
             <ProtectedRoute>
