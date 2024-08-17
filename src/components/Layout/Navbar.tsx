@@ -1,139 +1,189 @@
 import {
   Box,
   Flex,
-  Avatar,
+  Text,
+  IconButton,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-  useColorModeValue,
   Stack,
-  useColorMode,
-  Center,
+  Collapse,
   Container,
+  useColorModeValue,
+  useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import useAuthStatus from '../../hooks/useAuthStatus';
 import { supabase } from '../../utils/supabaseClient';
 
-interface Props {
-  children: React.ReactNode;
-}
-
-const NavLink = (props: Props) => {
-  const { children } = props;
-
-  const hoverBg = useColorModeValue('gray.200', 'gray.700');
-
-  return (
-    <Box
-      as="a"
-      px={2}
-      py={1}
-      rounded={'md'}
-      _hover={{
-        textDecoration: 'none',
-        bg: hoverBg,
-      }}
-      href={'#'}
-    >
-      {children}
-    </Box>
-  );
-};
-
 export default function NavBar() {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { isOpen, onToggle } = useDisclosure();
   const navigate = useNavigate();
-  const { user, loading } = useAuthStatus();
+  const { user, isAdmin } = useAuthStatus();
 
-  const bg = useColorModeValue('gray.100', 'gray.900');
-  const hoverBg = useColorModeValue('gray.200', 'gray.700');
-  const activeBg = useColorModeValue('gray.300', 'gray.600');
-
-  if (loading) {
-    return null;
-  }
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
+  const handleLogin = async () => {
+    if (user) {
+      await supabase.auth.signOut();
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
-    <Box bg={bg} px={4}>
-      <Container maxW="container.xl" py={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <Box>
-            <Button
-              onClick={() => navigate('/')}
-              variant="ghost"
-              _hover={{ bg: hoverBg }}
-              _active={{ bg: activeBg }}
-              px={4}
-              py={2}
-              fontSize="lg"
-              fontWeight="bold"
+    <Box>
+      <Flex
+        bg={useColorModeValue('gray.100', 'gray.900')}
+        color={useColorModeValue('gray.600', 'white')}
+        minH="60px"
+        py={{ base: 2 }}
+        borderBottom={1}
+        borderStyle="solid"
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
+        align="center"
+      >
+        <Container maxW="container.xl">
+          <Flex align="center">
+            <Flex
+              flex={{ base: 1, md: 'auto' }}
+              ml={{ base: -2 }}
+              display={{ base: 'flex', md: 'none' }}
             >
-              Shawn Collinge
-            </Button>
-          </Box>
+              <IconButton
+                onClick={onToggle}
+                icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
+                variant="ghost"
+                aria-label="Toggle Navigation"
+              />
+            </Flex>
+            <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+              <Text
+                textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+                fontFamily="heading"
+                color={useColorModeValue('gray.800', 'white')}
+                cursor="pointer"
+                onClick={() => navigate('/')}
+              >
+                Shawn Collinge
+              </Text>
 
-          <Flex alignItems={'center'}>
-            <Stack direction={'row'} spacing={7}>
-              <Button onClick={toggleColorMode}>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+              <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+                <DesktopNav navigate={navigate} isAdmin={isAdmin} />
+              </Flex>
+            </Flex>
+
+            <Stack
+              flex={{ base: 1, md: 0 }}
+              justify="flex-end"
+              direction="row"
+              spacing={6}
+            >
+              <Button
+                onClick={() => void handleLogin()}
+                fontSize="sm"
+                fontWeight={600}
+                color="white"
+                bg="blue.400"
+                _hover={{
+                  bg: 'blue.500',
+                }}
+              >
+                {user ? 'Logout' : 'Login'}
               </Button>
-
-              {user ? (
-                <Menu>
-                  <MenuButton
-                    as={Button}
-                    rounded={'full'}
-                    variant={'link'}
-                    cursor={'pointer'}
-                    minW={'0'}
-                  >
-                    <Avatar
-                      size={'sm'}
-                      src={'https://avatars.dicebear.com/api/male/username.svg'}
-                    />
-                  </MenuButton>
-                  <MenuList alignItems={'center'}>
-                    <br />
-                    <Center>
-                      <Avatar
-                        size={'2xl'}
-                        src={'https://avatars.dicebear.com/api/male/username.svg'}
-                      />
-                    </Center>
-                    <br />
-                    <Center>
-                      <p>{user.email}</p>
-                    </Center>
-                    <br />
-                    <MenuDivider />
-                    <NavLink>Profile</NavLink>
-                    <MenuItem>Account Settings</MenuItem>
-                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                  </MenuList>
-                </Menu>
-              ) : (
-                <Button
-                  onClick={() => navigate('/login')}
-                  variant="solid"
-                  colorScheme="blue"
-                >
-                  Login
-                </Button>
-              )}
             </Stack>
           </Flex>
-        </Flex>
-      </Container>
+        </Container>
+      </Flex>
+
+      <Collapse in={isOpen} animateOpacity>
+        <MobileNav navigate={navigate} isAdmin={isAdmin} />
+      </Collapse>
     </Box>
   );
 }
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const DesktopNav = ({ navigate, isAdmin }: { navigate: (href: string) => void; isAdmin: boolean }) => {
+  const linkColor = useColorModeValue('gray.600', 'gray.200');
+  const linkHoverColor = useColorModeValue('gray.800', 'white');
+
+  return (
+    <Stack direction="row" spacing={4}>
+      {NAV_ITEMS.map((navItem) => (
+        <Text
+          key={navItem.label}
+          fontSize="sm"
+          fontWeight={500}
+          color={linkColor}
+          cursor="pointer"
+          _hover={{
+            textDecoration: 'none',
+            color: linkHoverColor,
+          }}
+          onClick={() => navigate(navItem.href)}
+        >
+          {navItem.label}
+        </Text>
+      ))}
+      {isAdmin && ADMIN_NAV_ITEMS.map((navItem) => (
+        <Text
+          key={navItem.label}
+          fontSize="sm"
+          fontWeight={500}
+          color={linkColor}
+          cursor="pointer"
+          _hover={{
+            textDecoration: 'none',
+            color: linkHoverColor,
+          }}
+          onClick={() => navigate(navItem.href)}
+        >
+          {navItem.label}
+        </Text>
+      ))}
+    </Stack>
+  );
+};
+
+const MobileNav = ({ navigate, isAdmin }: { navigate: (href: string) => void; isAdmin: boolean }) => {
+  return (
+    <Stack bg={useColorModeValue('white', 'gray.800')} p={4} display={{ md: 'none' }}>
+      {NAV_ITEMS.map((navItem) => (
+        <Text
+          key={navItem.label}
+          py={2}
+          fontWeight={600}
+          color={useColorModeValue('gray.600', 'gray.200')}
+          cursor="pointer"
+          onClick={() => navigate(navItem.href)}
+        >
+          {navItem.label}
+        </Text>
+      ))}
+      {isAdmin && NAV_ITEMS.map((navItem) => (
+        <Text
+          key={navItem.label}
+          py={2}
+          fontWeight={600}
+          color={useColorModeValue('gray.600', 'gray.200')}
+          cursor="pointer"
+          onClick={() => navigate(navItem.href)}
+        >
+          {navItem.label}
+        </Text>
+      ))}
+    </Stack>
+  );
+};
+
+const ADMIN_NAV_ITEMS: NavItem[] = [
+  { label: 'Admin', href: '/admin' }
+];
+
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Projects', href: '/projects' },
+  { label: 'Contact', href: '/contact' },
+];

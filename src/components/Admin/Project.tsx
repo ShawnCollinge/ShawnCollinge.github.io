@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -10,55 +10,126 @@ import {
   Textarea,
   VStack,
   Heading,
+  Image,
+  HStack,
+  IconButton,
   useToast,
+  Box,
 } from '@chakra-ui/react';
-import { uploadFilesToS3 } from '../utils/UploadImageToS3'; // Import the upload function
+import { DeleteIcon } from '@chakra-ui/icons';
+import { uploadFilesToS3 } from '../utils/UploadImageToS3';
 import { supabase } from '../../utils/supabaseClient';
+import { Project } from '../../types/Projects';
 
-const Project: React.FC = () => {
+interface ProjectFormProps {
+  projectId?: string;
+}
+
+const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
   const [title, setTitle] = useState('');
   const [githubLink, setGithubLink] = useState('');
   const [techStacks, setTechStacks] = useState('');
   const [demoLink, setDemoLink] = useState('');
   const [description, setDescription] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // Store selected files
-
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]); // Store existing image URLs
   const toast = useToast();
+
+  useEffect(() => {
+    if (projectId) {
+      const fetchProject = async () => {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('id', projectId)
+          .returns<Project[]>()
+          .single();
+
+        if (error) {
+          toast({
+            title: 'Failed to load project',
+            description: error.message,
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else if (data) {
+          setTitle(data.title);
+          setGithubLink(data.github_link);
+          setTechStacks(data.tech_stacks);
+          setDemoLink(data.demo_link);
+          setDescription(data.description);
+          setIsFeatured(data.is_featured);
+          setExistingImages(data.image_urls || []); // Set existing images
+        }
+      };
+
+      fetchProject();
+    }
+  }, [projectId, toast]);
+
+  const handleRemoveImage = async (imageUrl: string) => {
+    try {
+      const updatedImages = existingImages.filter((url) => url !== imageUrl);
+
+      const { error } = await supabase
+        .from('projects')
+        .update({ image_urls: updatedImages })
+        .eq('id', projectId);
+
+      if (error) throw error;
+
+      setExistingImages(updatedImages);
+      toast({
+        title: 'Image removed successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Failed to remove image',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const urls = await uploadFilesToS3(selectedFiles);
+      const urls = selectedFiles.length > 0 ? await uploadFilesToS3(selectedFiles) : [];
 
-      const { error } = await supabase
-        .from('projects')
-        .insert([
-          {
-            title,
-            github_link: githubLink,
-            tech_stacks: techStacks,
-            demo_link: demoLink,
-            description,
-            image_urls: urls, 
-            is_featured: isFeatured,
-          },
-        ]);
+      const payload = {
+        title,
+        github_link: githubLink,
+        tech_stacks: techStacks,
+        demo_link: demoLink,
+        description,
+        image_urls: urls.length > 0 ? [...existingImages, ...urls] : existingImages, // Append new images to existing ones
+        is_featured: isFeatured,
+      };
+
+      const { error } = projectId
+        ? await supabase.from('projects').update(payload).eq('id', projectId)
+        : await supabase.from('projects').insert([payload]);
 
       if (error) throw error;
 
       toast({
-        title: 'Project created successfully!',
+        title: projectId ? 'Project updated successfully!' : 'Project created successfully!',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
-
     } catch (error) {
       toast({
-        title: 'Failed to create project',
-        description: (error instanceof Error) ? error.message : "An error occurred",
+        title: `Failed to ${projectId ? 'update' : 'create'} project`,
+        description: error instanceof Error ? error.message : 'An error occurred',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -70,7 +141,7 @@ const Project: React.FC = () => {
     <Container maxW="container.md" py={8}>
       <VStack spacing={4} align="stretch">
         <Heading as="h2" size="lg" mb={4}>
-          Add a Project
+          {!projectId ? 'Add a Project' : 'Edit Project'}
         </Heading>
         <form onSubmit={handleSubmit}>
           <Stack spacing={4}>
@@ -126,7 +197,35 @@ const Project: React.FC = () => {
 
             <FormControl>
               <FormLabel htmlFor="images">Images</FormLabel>
-              <Input type="file" multiple onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))} />
+              <Input
+                type="file"
+                multiple
+                onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
+              />
+              {existingImages.length > 0 && (
+                <VStack mt={4} align="stretch" spacing={4}>
+                  <Heading as="h5" size="sm">
+                    Current Images
+                  </Heading>
+                  <HStack spacing={4} wrap="wrap">
+                    {existingImages.map((imageUrl, index) => (
+                      <Box key={index} position="relative" boxSize="100px">
+                        <Image src={imageUrl} alt={`Thumbnail ${index}`} boxSize="100%" objectFit="cover" />
+                        <IconButton
+                          icon={<DeleteIcon />}
+                          colorScheme="red"
+                          size="sm"
+                          position="absolute"
+                          top="2px"
+                          right="2px"
+                          onClick={() => handleRemoveImage(imageUrl)}
+                          aria-label="Remove Image"
+                        />
+                      </Box>
+                    ))}
+                  </HStack>
+                </VStack>
+              )}
             </FormControl>
 
             <FormControl>
@@ -140,7 +239,7 @@ const Project: React.FC = () => {
             </FormControl>
 
             <Button type="submit" colorScheme="blue">
-              Submit
+              {projectId ? 'Save Changes' : 'Submit'}
             </Button>
           </Stack>
         </form>
@@ -149,4 +248,4 @@ const Project: React.FC = () => {
   );
 };
 
-export default Project;
+export default ProjectForm;

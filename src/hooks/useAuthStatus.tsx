@@ -9,7 +9,9 @@ const useAuthStatus = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
@@ -23,17 +25,19 @@ const useAuthStatus = () => {
 
     checkUser();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
 
-      if (currentUser) {
-        const isAdminFlag = currentUser.user_metadata.is_admin ?? false;
-        setIsAdmin(isAdminFlag);
-      } else {
-        setIsAdmin(false);
-      }
-    });
+        if (currentUser) {
+          const isAdminFlag = currentUser.user_metadata.is_admin ?? false;
+          setIsAdmin(isAdminFlag);
+        } else {
+          setIsAdmin(false);
+        }
+      },
+    );
 
     return () => {
       authListener.subscription.unsubscribe();

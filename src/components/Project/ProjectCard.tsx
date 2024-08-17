@@ -32,15 +32,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
       mb={4}
       p={4} 
     >
-        <Image
-          src={project.image_urls[0]}
-          alt={project.title}
-          objectFit="cover"
-          w="100%"
-          h="200px"
-          borderRadius="md"
-          onClick={() => navigate(`/projects/${project.id}`)}
-        />
+      <Image
+        src={project.image_urls[0]}
+        alt={project.title}
+        objectFit="cover"
+        w="100%"
+        h="200px"
+        borderRadius="md"
+        onClick={() => navigate(`/projects/${project.id}`)}
+      />
       <Box pt={4}> 
         <Heading fontSize="xl" mb={2}>
           {project.title}
@@ -85,7 +85,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
             <Stack direction="row" spacing={4} justify="center">
               <Button
                 as="a"
-                href={`/admin/edit/${project.id}`}
+                onClick={() => navigate(`/admin/editProject/${project.id}`)}
                 size="sm"
                 colorScheme="blue"
               >

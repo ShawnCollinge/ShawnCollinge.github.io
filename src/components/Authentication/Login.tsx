@@ -12,27 +12,27 @@ import {
   Stack,
   Text,
   useToast,
-} from '@chakra-ui/react'
-import { useState } from 'react'
-import { PasswordField } from './PasswordField'
-import { supabase } from '../../utils/supabaseClient'
-import { useNavigate } from 'react-router-dom'
+} from '@chakra-ui/react';
+import { useState } from 'react';
+import { PasswordField } from './PasswordField';
+import { supabase } from '../../utils/supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const toast = useToast()
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: { preventDefault: () => void }) => {
-    e.preventDefault(); 
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
-    setLoading(false)
+    });
+    setLoading(false);
 
     if (error) {
       toast({
@@ -41,7 +41,7 @@ export const Login = () => {
         status: 'error',
         duration: 5000,
         isClosable: true,
-      })
+      });
     } else {
       toast({
         title: 'Login successful',
@@ -49,19 +49,26 @@ export const Login = () => {
         status: 'success',
         duration: 5000,
         isClosable: true,
-      })
-      navigate('/')
+      });
+      navigate('/');
     }
-  }
+  };
 
   return (
-    <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '0', sm: '8' }}>
+    <Container
+      maxW="lg"
+      py={{ base: '12', md: '24' }}
+      px={{ base: '0', sm: '8' }}
+    >
       <Stack spacing="8">
         <Stack spacing="6">
           <Stack spacing={{ base: '2', md: '3' }} textAlign="center">
-            <Heading size={{ base: 'xs', md: 'sm' }}>Log in to your account</Heading>
+            <Heading size={{ base: 'xs', md: 'sm' }}>
+              Log in to your account
+            </Heading>
             <Text color="fg.muted">
-              Don&apos;t have an account? <Link onClick={() => navigate('/register')}>Sign up</Link>
+              Don&apos;t have an account?{' '}
+              <Link onClick={() => navigate('/register')}>Sign up</Link>
             </Text>
           </Stack>
         </Stack>
@@ -81,17 +88,21 @@ export const Login = () => {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={e => setEmail(e.target.value)}
                   />
                 </FormControl>
                 <PasswordField
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </Stack>
               <HStack justify="space-between">
                 <Checkbox defaultChecked>Remember me</Checkbox>
-                <Button variant="text" size="sm" onClick={() => navigate('/forgotPassword')}>
+                <Button
+                  variant="text"
+                  size="sm"
+                  onClick={() => navigate('/forgotPassword')}
+                >
                   Forgot password?
                 </Button>
               </HStack>
@@ -105,5 +116,5 @@ export const Login = () => {
         </Box>
       </Stack>
     </Container>
-  )
-}
+  );
+};

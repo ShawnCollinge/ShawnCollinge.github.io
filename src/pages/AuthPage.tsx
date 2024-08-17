@@ -5,7 +5,7 @@ import { Login } from '../components/Authentication/Login';
 import { ForgotPassword } from '../components/Authentication/ForgotPassword';
 
 interface AuthProps {
-  pageType:  AuthPageType;
+  pageType: AuthPageType;
 }
 
 const AuthPage: React.FC<AuthProps> = ({ pageType }) => {
@@ -16,6 +16,6 @@ const AuthPage: React.FC<AuthProps> = ({ pageType }) => {
       {pageType === AuthPageType.FORGOT_PASSWORD && <ForgotPassword />}
     </>
   );
-}
+};
 
 export default AuthPage;
