@@ -1,52 +1,38 @@
-'use client';
-
 import {
   Box,
   chakra,
   Container,
   Stack,
   Text,
+  useColorMode,
   useColorModeValue,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
-import { ReactNode } from 'react';
+import { FaGithub, FaLinkedin, FaMoon, FaSun } from 'react-icons/fa';
 
-const SocialButton = ({
-  children,
-  label,
-  href,
-}: {
-  children: ReactNode;
-  label: string;
-  href: string;
-}) => {
-  return (
-    <chakra.button
-      bg={useColorModeValue('blackAlpha.100', 'whiteAlpha.100')}
-      rounded="full"
-      w={8}
-      h={8}
-      cursor="pointer"
-      as="a"
-      href={href}
-      display="inline-flex"
-      alignItems="center"
-      justifyContent="center"
-      target="_blank"
-      rel="noopener noreferrer"
-      transition="background 0.3s ease"
-      _hover={{
-        bg: useColorModeValue('blackAlpha.200', 'whiteAlpha.200'),
-      }}
-    >
-      <VisuallyHidden>{label}</VisuallyHidden>
-      {children}
-    </chakra.button>
-  );
-};
 
 export default function Footer() {
+  const { colorMode, toggleColorMode } = useColorMode()
+  const buttonProps = {
+    bg: useColorModeValue('blackAlpha.100', 'whiteAlpha.100'),
+    rounded: "full",
+    w: 8,
+    h: 8,
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background 0.3s ease",
+    _hover: {
+      bg: useColorModeValue('blackAlpha.200', 'whiteAlpha.200'),
+    }
+  };
+
+  const urlProps = {
+    target: "_blank",
+    rel: "noopener noreferrer"
+  }
+
   return (
     <Box
       bg={useColorModeValue('gray.50', 'gray.900')}
@@ -63,15 +49,31 @@ export default function Footer() {
       >
         <Text>© 2024 Shawn Collinge</Text>
         <Stack direction="row" spacing={6}>
-          <SocialButton label="Github" href="https://github.com/ShawnCollinge">
-            <FaGithub />
-          </SocialButton>
-          <SocialButton
-            label="YouTube"
-            href="https://www.linkedin.com/in/s-collinge/"
+          <chakra.button
+            {...buttonProps}
+            onClick={toggleColorMode}
           >
+            <VisuallyHidden>Github</VisuallyHidden>
+            {colorMode === 'light' ? <FaMoon /> : <FaSun />}
+          </chakra.button>
+          <chakra.button
+            {...buttonProps}
+            as="a"
+            href="https://github.com/ShawnCollinge"
+            {...urlProps}
+          >
+            <VisuallyHidden>Github</VisuallyHidden>
+            <FaGithub />
+          </chakra.button>
+          <chakra.button
+            {...buttonProps}
+            {...urlProps}
+            as="a"
+            href="https://github.com/ShawnCollinge"
+          >
+            <VisuallyHidden>LinkedIn</VisuallyHidden>
             <FaLinkedin />
-          </SocialButton>
+          </chakra.button>
         </Stack>
       </Container>
     </Box>
