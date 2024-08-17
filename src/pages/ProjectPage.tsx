@@ -77,16 +77,23 @@ const ViewProject: React.FC = () => {
             >
               Github
             </Button>
-            <Button
-              {...rightButton}
-              as={project.demo_link ? "a" : "button"} 
-              href={project.demo_link || undefined} 
-              target={project.demo_link ? "_blank" : undefined} 
-              isDisabled={!project.demo_link}
-            >
-              Demo
-            </Button>
-
+            {project.demo_link ? (
+              <Button
+                {...rightButton}
+                as="a"
+                href={project.demo_link}
+                target="_blank"
+              >
+                Demo
+              </Button>
+            ) : (
+              <Button
+                {...rightButton}
+                isDisabled
+              >
+                Demo
+              </Button>
+            )}
           </Stack>
         </Stack>
         <Flex
