@@ -4,10 +4,7 @@ import {
   Container,
   Stack,
   Box,
-  Heading,
-  Text,
   Button,
-  VStack,
   Spinner,
   useColorModeValue,
   Flex,
@@ -15,14 +12,17 @@ import {
 import Carousel from '../components/Carousel';
 import { supabase } from '../utils/supabaseClient';
 import { Project } from '../types/Projects';
+import HighlightedHeading from '../components/utils/ContainerUtils';
+import { Markdown } from '../utils/markdownUtils';
+import { Blob } from '../utils/blob';
+import { leftButton, rightButton } from '../utils/buttonProps';
 
 const ViewProject: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const navigate = useNavigate();
-  const textColor = useColorModeValue('gray.800', 'gray.100');
-  const descriptionBgColor = useColorModeValue('white', 'gray.700');
-  const containerBgColor = useColorModeValue('gray.50', 'gray.900');
+  const bgColor = useColorModeValue('blue.50', 'blue.400');
+  const textColor = useColorModeValue('gray.500', 'gray.200');
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -30,6 +30,7 @@ const ViewProject: React.FC = () => {
         .from('projects')
         .select('*')
         .eq('id', id)
+        .returns<Project[]>()
         .single();
 
       if (error) {
@@ -40,7 +41,7 @@ const ViewProject: React.FC = () => {
     };
 
     fetchProject();
-  }, [id]);
+  }, [id, navigate]);
 
   if (!project) {
     return (
@@ -51,64 +52,74 @@ const ViewProject: React.FC = () => {
   }
 
   return (
-    <Container maxW="7xl" py={{ base: 20, md: 28 }} bg={containerBgColor} borderRadius="xl" boxShadow="2xl">
-      <Stack align="center" spacing={{ base: 8, md: 12 }}>
-        <Heading
-          lineHeight={1.1}
-          fontWeight={600}
-          fontSize={{ base: '3xl', sm: '4xl', lg: '6xl' }}
-          textAlign="center"
-          position="relative"
-          _after={{
-            content: "''",
-            width: 'full',
-            height: '30%',
-            position: 'absolute',
-            bottom: 1,
-            left: 0,
-            bg: 'blue.400',
-            zIndex: -1,
-          }}
-          color={textColor}
-        >
-          {project.title}
-        </Heading>
-
-        <Box w="full" mb={10}>
-          <Carousel images={project.image_urls} />
-        </Box>
-
-        <Box bg={descriptionBgColor} p={8} rounded="lg" boxShadow="lg" w="full" maxW="3xl">
-          <Heading as="h5" size="lg" mb={6} color={textColor}>
-            Description
-          </Heading>
-          <Text fontSize="lg" mb={8} color={textColor}>
-            {project.description}
-          </Text>
-          <VStack spacing={4} align="stretch">
+    <Container maxW="7xl" height="100vh" display="flex" alignItems="center">
+      <Stack
+        align="center"
+        direction={{ base: 'column', md: 'row' }}
+        spacing={{ base: 8, md: 10 }}
+        justify="space-between"
+        width="100%"
+      >
+        <Stack flex={1} spacing={{ base: 5, md: 10 }}>
+          <HighlightedHeading>{project.title}</HighlightedHeading>
+          <Box color={textColor} fontSize="lg">
+            <Markdown>{project.description}</Markdown>
+          </Box>
+          <Stack
+            spacing={{ base: 4, sm: 6 }}
+            direction={{ base: 'column', sm: 'row' }}
+          >
             <Button
+              {...leftButton}
               as="a"
               href={project.github_link}
               target="_blank"
-              variant="solid"
-              colorScheme="blue"
-              size="lg"
             >
               Github
             </Button>
             <Button
-              as="a"
-              href={project.demo_link}
-              target="_blank"
-              variant="outline"
-              colorScheme="blue"
-              size="lg"
+              {...rightButton}
+              as={project.demo_link ? "a" : "button"} 
+              href={project.demo_link || undefined} 
+              target={project.demo_link ? "_blank" : undefined} 
               isDisabled={!project.demo_link}
             >
               Demo
             </Button>
-          </VStack>
-        </Box>
+
+          </Stack>
+        </Stack>
+        <Flex
+          flex={1}
+          justify="center"
+          align="center"
+          position="relative"
+          w="full"
+          h="100%" 
+        >
+          <Blob
+            w="150%"
+            h="150%"
+            position="absolute"
+            top="-20%"
+            left={0}
+            zIndex={-1}
+            color={bgColor}
+          />
+          <Box
+            position="relative"
+            height="350px"
+            rounded="2xl"
+            boxShadow="2xl"
+            width="full"
+            overflow="hidden"
+            display="flex"
+            justifyContent="center"
+            alignItems="center" 
+          >
+            <Carousel images={project.image_urls} />
+          </Box>
+        </Flex>
       </Stack>
     </Container>
   );
